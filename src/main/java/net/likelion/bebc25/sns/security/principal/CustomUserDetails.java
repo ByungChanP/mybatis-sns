@@ -1,0 +1,93 @@
+package net.likelion.bebc25.sns.security.principal;
+
+
+import net.likelion.bebc25.sns.domain.Member;
+import org.jspecify.annotations.Nullable;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+
+public class CustomUserDetails implements UserDetails, OAuth2User {
+
+    private final Member member;
+    private final Map<String, Object> attributes; // 소셜 프로필 속성 보관 필드 추가
+
+    public CustomUserDetails(Member member){
+        this.member = member;
+        this.attributes = Collections.emptyMap();
+    }
+
+    // OAuth 2.0 소셜 로그인용 신규 생성자 추가
+    public CustomUserDetails(Member member, Map<String, Object> attributes) {
+        this.member = member;
+        this.attributes = attributes;
+    }
+
+    // 사용자 정보가 전부 들어있는 Member 객체를 반환
+    public Member getMember(){
+        return this.member;
+    }
+
+    public Long getId(){
+        return this.member.getId();
+    }
+
+    // 권한 목록 반환
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        // 권한 문자열을 Spring Security의 SimpleGrantedAuthority 타입으로 변환
+        return List.of(new SimpleGrantedAuthority(member.getRole()));
+    }
+    // 비밀번호 반환
+    @Override
+    public @Nullable String getPassword() {
+        return member.getPassword();
+    }
+    // 사용자의 식별자 반환
+    @Override
+    public String getUsername() {
+        return member.getEmail();
+    }
+
+    // 계정의 만료 여부
+    @Override
+    public boolean isAccountNonExpired() {
+        return UserDetails.super.isAccountNonExpired();
+    }
+
+    // 계정 잠김 여부 EX) 비번 틀린경우
+    @Override
+    public boolean isAccountNonLocked() {
+        return UserDetails.super.isAccountNonLocked();
+    }
+
+    // 인증 정보 만료 여부 ex 자동 로그아웃 등
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return UserDetails.super.isCredentialsNonExpired();
+    }
+
+    // 계정 활성화 여부 (휴면 계정 확인)
+    @Override
+    public boolean isEnabled() {
+        return UserDetails.super.isEnabled();
+    }
+
+
+    // 2. OAuth2User 인터페이스 구현 메서드 추가
+    @Override
+    public Map<String, Object> getAttributes() {
+        return attributes;
+    }
+
+    @Override
+    public String getName() {
+        return member.getEmail();
+    }
+}

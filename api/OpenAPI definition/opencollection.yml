@@ -1,0 +1,33 @@
+opencollection: 1.0.0
+
+info:
+  name: mybatis-sns
+config:
+  proxy:
+    inherit: true
+    config:
+      protocol: http
+      hostname: ""
+      port: ""
+      auth:
+        username: ""
+        password: ""
+      bypassProxy: ""
+
+request:
+  auth:
+    type: bearer
+    token: "{{accessToken}}"
+bundled: false
+extensions:
+  bruno:
+    ignore:
+      - node_modules
+      - .git
+    openapi:
+      - sourceUrl: http://localhost:8080/v3/api-docs
+        groupBy: tags
+        lastSyncDate: 2026-09-08T05:25:42.098Z
+        specHash: 4fef34f48bfd146741d7cbef7a040197
+        autoCheck: true
+        autoCheckInterval: 5
